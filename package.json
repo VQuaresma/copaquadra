@@ -1,0 +1,27 @@
+{
+  "name": "copaquadra",
+  "version": "1.0.0",
+  "description": "Sistema em tempo real para sorteio de jogadores e gestão de grupos de futebol.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VQuaresma/copaquadra.git"
+  },
+  "bugs": {
+    "url": "https://github.com/VQuaresma/copaquadra/issues"
+  },
+  "homepage": "https://github.com/VQuaresma/copaquadra#readme"
+}

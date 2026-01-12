@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8"><title>ADMIN QUADRA 7</title>
+    <style>
+        body { background: #000; color: white; font-family: 'Oswald', sans-serif; text-align: center; }
+        .card { background: #111; padding: 20px; border: 2px solid #ff4d00; display: inline-block; margin-top: 20px; }
+        input { display: block; margin: 5px auto; padding: 8px; width: 200px; }
+        button { background: #ff4d00; border: none; padding: 10px; cursor: pointer; font-weight: bold; width: 220px; margin-top: 10px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div id="login" class="card"><h2>LOGIN ADMIN</h2><input type="password" id="pw"><button onclick="login()">ENTRAR</button></div>
+    <div id="painel" class="card hidden">
+        <h2>9 CAPITÃES</h2><div id="ins"></div>
+        <button onclick="salvar()">1. SALVAR NOMES</button>
+        <button onclick="socket.emit('liberar_draft')" style="background:white">2. INICIAR DRAFT</button>
+        <button onclick="socket.emit('sortear_grupos')" style="background:#00ccff">3. GERAR GRUPOS/JOGOS</button>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const ins = document.getElementById('ins');
+        for(let i=1; i<=9; i++) ins.innerHTML += `<input type="text" id="c${i}" placeholder="Capitão ${i}">`;
+        function login() { if(document.getElementById('pw').value === 'admin123') { document.getElementById('login').classList.add('hidden'); document.getElementById('painel').classList.remove('hidden'); } }
+        function salvar() {
+            const nomes = [];
+            for(let i=1; i<=9; i++) nomes.push(document.getElementById(`c${i}`).value || `Capitão ${i}`);
+            socket.emit('set_capitaes', nomes);
+        }
+    </script>
+</body>
+</html>
