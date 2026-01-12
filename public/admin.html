@@ -1,33 +1,220 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8"><title>ADMIN QUADRA 7</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAINEL ADMIN | COPA QUADRA 7</title>
     <style>
-        body { background: #000; color: white; font-family: 'Oswald', sans-serif; text-align: center; }
-        .card { background: #111; padding: 20px; border: 2px solid #ff4d00; display: inline-block; margin-top: 20px; }
-        input { display: block; margin: 5px auto; padding: 8px; width: 200px; }
-        button { background: #ff4d00; border: none; padding: 10px; cursor: pointer; font-weight: bold; width: 220px; margin-top: 10px; }
-        .hidden { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
+        
+        body { 
+            background: #0d0d0d; 
+            color: white; 
+            font-family: 'Oswald', sans-serif; 
+            text-transform: uppercase; 
+            margin: 20px; 
+        }
+
+        .grid-main { 
+            display: grid; 
+            grid-template-columns: 1fr 320px; 
+            gap: 20px; 
+        }
+
+        .card { 
+            background: #151515; 
+            padding: 20px; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            margin-bottom: 15px; 
+        }
+
+        h2, h3 { 
+            color: #ff4d00; 
+            margin-top: 0; 
+            border-bottom: 2px solid #ff4d00; 
+            padding-bottom: 5px; 
+        }
+
+        /* Monitoramento de Times */
+        .teams-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 15px; 
+        }
+
+        .team-card { 
+            border-left: 5px solid #444; 
+            transition: all 0.3s ease; 
+        }
+
+        .team-card.online { 
+            border-left-color: #00ff00; 
+            background: #0a1a0a; 
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1);
+        }
+
+        .cap-name { 
+            font-size: 0.9rem; 
+            font-weight: bold; 
+            color: #888; 
+        }
+
+        .online-glow { 
+            color: #00ff00; 
+            text-shadow: 0 0 8px #00ff00; 
+            font-weight: bold;
+        }
+
+        .player-list { 
+            margin-top: 10px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 5px; 
+        }
+
+        .player-tag { 
+            background: #222; 
+            font-size: 0.7rem; 
+            padding: 3px 8px; 
+            border-radius: 4px; 
+            border: 1px solid #333; 
+        }
+
+        /* Controles */
+        .controls-panel { 
+            position: sticky; 
+            top: 20px; 
+        }
+
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            margin-bottom: 10px; 
+            border: none; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-family: 'Oswald'; 
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .btn-start { background: #ffffff; color: #000; }
+        .btn-groups { background: #00ccff; color: white; }
+        .btn-reset { background: #333; color: #888; font-size: 0.7rem; padding: 8px; }
+        
+        button:hover { opacity: 0.8; transform: translateY(-2px); }
+
+        .status-box { font-size: 1.1rem; text-align: center; }
+        .hidden { display: none !important; }
+
+        #login-screen {
+            height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
-    <div id="login" class="card"><h2>LOGIN ADMIN</h2><input type="password" id="pw"><button onclick="login()">ENTRAR</button></div>
-    <div id="painel" class="card hidden">
-        <h2>9 CAPITÃES</h2><div id="ins"></div>
-        <button onclick="salvar()">1. SALVAR NOMES</button>
-        <button onclick="socket.emit('liberar_draft')" style="background:white">2. INICIAR DRAFT</button>
-        <button onclick="socket.emit('sortear_grupos')" style="background:#00ccff">3. GERAR GRUPOS/JOGOS</button>
+
+    <div id="login-screen">
+        <div class="card" style="width: 300px; text-align: center;">
+            <h3>ACESSO RESTRITO</h3>
+            <input type="password" id="admin-pw" placeholder="SENHA" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #222; border: 1px solid #ff4d00; color: white; box-sizing: border-box;">
+            <button class="btn-start" onclick="login()">ENTRAR</button>
+        </div>
     </div>
+
+    <div id="admin-content" class="grid-main hidden">
+        
+        <div>
+            <h2>SITUAÇÃO DOS TIMES</h2>
+            <div id="teams-monitor" class="teams-container">
+                </div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="card status-box">
+                <p id="pote-label">DRAFT: AGUARDANDO</p>
+                <hr style="border: 0; border-top: 1px solid #333;">
+                <p id="vez-label" style="font-size: 0.8rem; color: #aaa;">VEZ DE: --</p>
+            </div>
+
+            <button class="btn-start" onclick="liberarDraft()">1. LIBERAR INÍCIO DRAFT</button>
+            <button class="btn-groups" onclick="gerarGrupos()">2. SORTEAR GRUPOS/JOGOS</button>
+            
+            <div style="margin-top: 20px;">
+                <button class="btn-reset" onclick="recarregarPagina()">RECARREGAR PAINEL</button>
+            </div>
+        </div>
+
+    </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
-        const ins = document.getElementById('ins');
-        for(let i=1; i<=9; i++) ins.innerHTML += `<input type="text" id="c${i}" placeholder="Capitão ${i}">`;
-        function login() { if(document.getElementById('pw').value === 'admin123') { document.getElementById('login').classList.add('hidden'); document.getElementById('painel').classList.remove('hidden'); } }
-        function salvar() {
-            const nomes = [];
-            for(let i=1; i<=9; i++) nomes.push(document.getElementById(`c${i}`).value || `Capitão ${i}`);
-            socket.emit('set_capitaes', nomes);
+
+        function login() {
+            const pw = document.getElementById('admin-pw').value;
+            if(pw === 'admin123') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+            } else {
+                alert("Senha Incorreta!");
+            }
+        }
+
+        socket.on('config_atual', d => renderAdmin(d));
+        socket.on('atualizacao_geral', d => renderAdmin(d));
+
+        function renderAdmin(data) {
+            if(!data.capitães) return;
+
+            // Renderizar Cards de Monitoramento
+            const container = document.getElementById('teams-monitor');
+            container.innerHTML = data.capitães.map(c => `
+                <div class="card team-card ${c.online ? 'online' : ''}">
+                    <div style="display:flex; justify-content:space-between; align-items: flex-start;">
+                        <div>
+                            <div style="font-weight:bold; font-size:1.1rem;">${c.nome}</div>
+                            <div class="cap-name ${c.online ? 'online-glow' : ''}">
+                                ${c.online ? '● ' + c.capPessoa : '○ OFFLINE'}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="player-list">
+                        ${c.time.map(p => `<span class="player-tag">${p.nome}</span>`).join('')}
+                        ${c.time.length === 0 ? '<small style="color:#444">Nenhum jogador</small>' : ''}
+                    </div>
+                </div>
+            `).join('');
+
+            // Atualizar Status do Draft
+            const potes = ["", "GOLEIROS", "LINHA (RODADA 1)", "LINHA (RODADA 2)"];
+            document.getElementById('pote-label').innerText = data.draftIniciado ? `POTE: ${potes[data.poteAtual]}` : "DRAFT: PAUSADO";
+            
+            if(data.capitãoVez) {
+                const vez = data.capitães.find(c => c.id === data.capitãoVez);
+                document.getElementById('vez-label').innerText = `VEZ DE: ${vez ? vez.nome : '--'}`;
+            }
+        }
+
+        function liberarDraft() {
+            if(confirm("Deseja iniciar o Draft agora? Os capitães verão os jogadores.")) {
+                socket.emit('liberar_draft');
+            }
+        }
+
+        function gerarGrupos() {
+            if(confirm("Gerar grupos e tabela de jogos agora?")) {
+                socket.emit('sortear_grupos');
+            }
+        }
+
+        function recarregarPagina() {
+            location.reload();
         }
     </script>
 </body>

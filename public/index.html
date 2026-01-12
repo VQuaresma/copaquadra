@@ -3,71 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>COPA QUADRA 7 | DRAFT</title>
+    <title>DRAFT | QUADRA 7</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
-        :root { --kl-orange: #ff4d00; --kl-black: #0d0d0d; --kl-gray: #1a1a1a; }
-        body { background: var(--kl-black); color: white; font-family: 'Oswald', sans-serif; margin: 0; text-transform: uppercase; }
-        .header { background: #000; padding: 10px 20px; border-bottom: 2px solid var(--kl-orange); display: flex; justify-content: space-between; align-items: center; }
-        .order-container { display: flex; justify-content: center; gap: 5px; padding: 10px; background: var(--kl-gray); overflow-x: auto; }
-        .cap-badge { padding: 4px 8px; border: 1px solid #444; font-size: 0.7rem; opacity: 0.4; white-space: nowrap; }
-        .cap-badge.active { opacity: 1; border-color: var(--kl-orange); color: var(--kl-orange); background: rgba(255,77,0,0.1); }
-        .draft-area { padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        .cards-list { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 400px; }
-        .player-card { background: #151515; border: 1px solid #333; display: flex; align-items: center; padding: 10px; border-radius: 4px; }
-        .player-card.chosen { opacity: 0.1; pointer-events: none; }
-        .card-img { width: 50px; height: 50px; background: #222; border-radius: 50%; border: 2px solid var(--kl-orange); margin-right: 15px; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; border-top: 1px solid #333; }
-        .nav-item { flex: 1; padding: 15px; text-align: center; font-size: 0.8rem; color: #888; }
-        .nav-item.active { color: var(--kl-orange); }
-        .section { display: none; padding: 15px; padding-bottom: 80px; }
-        .section.active { display: block; }
-        .team-box { background: #111; padding: 10px; margin-bottom: 10px; border-left: 3px solid var(--kl-orange); }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        :root { --orange: #ff4d00; --gold: linear-gradient(45deg, #f3d053, #e1ad01); }
+
+        body { 
+            background: #000; color: white; font-family: 'Oswald', sans-serif; 
+            margin: 0; text-transform: uppercase; overflow-x: hidden; 
+        }
+
+        /* Telas de Bloqueio */
+        .overlay-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 9999; display: flex;
+            flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box; text-align: center;
+        }
+
+        select, .btn { 
+            width: 100%; max-width: 300px; padding: 15px; margin: 10px; 
+            background: #111; color: white; border: 1px solid var(--orange); 
+            font-family: 'Oswald'; font-size: 1rem;
+        }
+
+        .btn { background: var(--orange); border: none; cursor: pointer; font-weight: bold; }
+
         .hidden { display: none !important; }
+
+        /* Interface Principal */
+        .header { 
+            background: #000; padding: 15px; border-bottom: 2px solid var(--orange); 
+            position: fixed; top: 0; width: 100%; z-index: 100; 
+            display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
+        }
+
+        .vitrine-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+            gap: 15px; padding: 20px; margin-top: 80px; padding-bottom: 100px;
+        }
+
+        .fifa-card { 
+            width: 140px; height: 200px; background: var(--gold); 
+            clip-path: polygon(0% 15%, 15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%); 
+            position: relative; color: #111; display: flex; flex-direction: column; align-items: center; padding-top: 15px; 
+        }
+
+        /* Estilos do Carrossel */
+        .swiper { width: 100%; padding-top: 100px; padding-bottom: 50px; }
+        .swiper-slide { 
+            background: #111; border: 2px solid var(--orange); border-radius: 15px; 
+            width: 280px; height: 450px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column;
+        }
+        .slide-title { color: var(--orange); font-size: 1.5rem; text-align: center; border-bottom: 1px solid #333; margin-bottom: 15px; padding-bottom: 10px; }
+        .player-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; font-size: 0.85rem; }
+
+        .bottom-nav { 
+            position: fixed; bottom: 0; width: 100%; background: #000; 
+            display: flex; border-top: 1px solid #333; z-index: 1000; 
+        }
+        .nav-item { flex: 1; padding: 15px; text-align: center; font-size: 0.8rem; color: #555; cursor: pointer; }
+        .nav-item.active { color: var(--orange); border-top: 3px solid var(--orange); }
+
+        .section { display: none; }
+        .section.active { display: block; }
     </style>
 </head>
 <body>
-    <div id="wait-screen" class="overlay"><h1>COPA QUADRA 7</h1><p>AGUARDANDO ADMIN...</p></div>
-    <div class="header"><h1>QUADRA 7 <span style="color:var(--kl-orange)">ED. 7</span></h1></div>
 
-    <div id="draft-view" class="section active">
-        <div class="order-container" id="cap-order"></div>
-        <div class="draft-area"><div class="cards-list" id="vitrine"></div></div>
+    <div id="screen-id" class="overlay-screen">
+        <h2 style="color:var(--orange)">DRAFT QUADRA 7</h2>
+        <select id="t-select" onchange="filtrarMembros(this.value)">
+            <option value="">SELECIONE SEU TIME</option>
+            <option value="1">SENEGALA 🇸🇳</option>
+            <option value="2">ARÁBIA MALDITA 🇸🇦</option>
+            <option value="3">LARANJA MECÂNICA 🇳🇱</option>
+            <option value="4">BAILE DA COLÔMBIA FC 🇨🇴</option>
+            <option value="5">NICARALHOS 🇳🇮</option>
+            <option value="6">HOLADURAS 🇭🇳</option>
+            <option value="7">4º REICH 🇩🇪</option>
+            <option value="8">ESPANHOLA 🇪🇸</option>
+            <option value="9">REPÚBLICA XECA 🇨🇿</option>
+        </select>
+        <select id="p-select"><option value="">QUEM É VOCÊ?</option></select>
+        <button class="btn" onclick="confirmarID()">ENTRAR</button>
     </div>
 
-    <div id="times-view" class="section"><h2>TIMES</h2><div id="lista-times"></div></div>
-    <div id="jogos-view" class="section"><h2>CONFRONTOS</h2><div id="lista-jogos"></div></div>
+    <div id="screen-wait" class="overlay-screen hidden">
+        <h1 style="color:var(--orange)">CONECTADO!</h1>
+        <p id="nome-exibicao"></p>
+        <p style="border:1px solid #333; padding:20px;">AGUARDANDO O ADMIN <br> INICIAR O DRAFT...</p>
+    </div>
+
+    <div class="header">
+        <span id="meu-status" style="font-size: 0.7rem;"></span>
+        <span id="pote-label" style="background:var(--orange); padding:2px 10px; border-radius:3px">POTE: --</span>
+    </div>
+
+    <div id="view-draft" class="section active"><div id="vitrine" class="vitrine-grid"></div></div>
+
+    <div id="view-times" class="section">
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper" id="carrossel-content"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
 
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="nav(this, 'draft-view')">DRAFT</div>
-        <div class="nav-item" onclick="nav(this, 'times-view')">TIMES</div>
-        <div class="nav-item" onclick="nav(this, 'jogos-view')">JOGOS</div>
+        <div id="nav-draft" class="nav-item active" onclick="mudarAba(this, 'view-draft')">DRAFT</div>
+        <div id="nav-times" class="nav-item" onclick="mudarAba(this, 'view-times')">TIMES</div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
     <script>
         const socket = io();
-        function nav(el, id) {
+        let meuId = localStorage.getItem('capId');
+        let meuNome = localStorage.getItem('capNome');
+        let dadosServidor = null;
+
+        const swiper = new Swiper(".mySwiper", {
+            effect: "coverflow", centeredSlides: true, slidesPerView: "auto",
+            coverflowEffect: { rotate: 50, stretch: 0, depth: 100, modifier: 1, slideShadows: true },
+            pagination: { el: ".swiper-pagination" },
+        });
+
+        socket.on('config_atual', d => { dadosServidor = d; gerenciarTelas(d); render(d); });
+        socket.on('atualizacao_geral', d => { dadosServidor = d; render(d); });
+        socket.on('draft_liberado', d => { 
+            dadosServidor = d; 
+            document.getElementById('screen-wait').classList.add('hidden'); 
+            render(d); 
+        });
+
+        // TROCA PARA O CARROSSEL AUTOMÁTICO
+        socket.on('draft_finalizado', d => {
+            dadosServidor = d;
+            render(d);
+            mudarAba(document.getElementById('nav-times'), 'view-times');
+            alert("DRAFT FINALIZADO! CONFIRA OS TIMES.");
+        });
+
+        function filtrarMembros(timeId) {
+            const p = document.getElementById('p-select');
+            p.innerHTML = '<option value="">QUEM É VOCÊ?</option>';
+            if(!timeId || !dadosServidor) return;
+            const time = dadosServidor.capitães.find(c => c.id == timeId);
+            if(time) time.time.forEach(j => p.innerHTML += `<option value="${j.nome}">${j.nome}</option>`);
+        }
+
+        function confirmarID() {
+            const tid = document.getElementById('t-select').value, nom = document.getElementById('p-select').value;
+            if(!tid || !nom) return alert("Selecione os campos!");
+            localStorage.setItem('capId', tid); localStorage.setItem('capNome', nom);
+            socket.emit('set_identidade', { timeId: tid, nomePessoa: nom });
+            location.reload();
+        }
+
+        function gerenciarTelas(d) {
+            if(!meuId) return document.getElementById('screen-id').classList.remove('hidden');
+            document.getElementById('screen-id').classList.add('hidden');
+            document.getElementById('meu-status').innerText = `CAP: ${meuNome}`;
+            if(!d.draftIniciado) document.getElementById('screen-wait').classList.remove('hidden');
+        }
+
+        function mudarAba(el, id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             el.classList.add('active');
+            if(id === 'view-times') setTimeout(() => swiper.update(), 200);
         }
-        socket.on('config_atual', (d) => { if(d.draftIniciado) document.getElementById('wait-screen').classList.add('hidden'); render(d); });
-        socket.on('draft_liberado', (d) => { document.getElementById('wait-screen').classList.add('hidden'); render(d); });
-        socket.on('atualizacao_geral', (d) => render(d));
-        socket.on('grupos_definidos', (d) => render(d));
 
-        function render(data) {
-            if(data.trioCaps) document.getElementById('cap-order').innerHTML = data.trioCaps.map((c,i)=>`<div class="cap-badge ${i===data.indexVez?'active':''}">${c.nome}</div>`).join('');
-            if(data.trioJogs) document.getElementById('vitrine').innerHTML = data.trioJogs.map(j=>`
-                <div class="player-card ${j.selecionado?'chosen':''}" onclick="socket.emit('escolher_jogador', ${j.id})">
-                    <div class="card-img"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${j.nome}" style="width:100%"></div>
-                    <div><div style="font-weight:bold">${j.nome}</div><div style="color:var(--kl-orange);font-size:0.8rem">SKILL: ${j.skill}</div></div>
-                </div>`).join('');
-            if(data.capitães) document.getElementById('lista-times').innerHTML = data.capitães.map(c=>`<div class="team-box"><strong>${c.nome}</strong><br><small>${c.time.map(p=>p.nome).join(' • ')}</small></div>`).join('');
-            if(data.jogos) document.getElementById('lista-jogos').innerHTML = data.jogos.map(j=>`<div class="team-box"><small>GP ${j.gp}</small><br>${j.t1} VS ${j.t2}</div>`).join('');
+        function render(d) {
+            const potes = ["", "GOLEIROS", "LINHA (R1)", "LINHA (R2)"];
+            document.getElementById('pote-label').innerText = potes[d.poteAtual] || "FIM";
+
+            const capVez = d.capitães.find(c => c.id === d.capitãoVez);
+            const statusLabel = document.getElementById('meu-status');
+            const eMinhaVez = d.capitãoVez == meuId;
+
+            if(eMinhaVez) statusLabel.innerHTML = `<span style="color:#0f0">SUA VEZ!</span>`;
+            else statusLabel.innerText = capVez ? `VEZ: ${capVez.nome}` : meuNome;
+
+            if (d.jogadoresDisponiveis) {
+                document.getElementById('vitrine').innerHTML = d.jogadoresDisponiveis.map(j => `
+                    <div class="fifa-card" style="${!eMinhaVez ? 'filter:grayscale(1);opacity:0.5' : ''}" 
+                         onclick="socket.emit('escolher_jogador', {jogadorId: ${j.id}, capId: ${meuId}})">
+                        <div style="font-weight:bold; position:absolute; left:15px; top:20px; font-size:1.2rem">${j.skill}</div>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${j.nome}" style="width:70px; margin-top:25px">
+                        <div style="font-size:0.75rem; font-weight:bold; margin-top:10px">${j.nome}</div>
+                    </div>
+                `).join('');
+            }
+
+            if (d.capitães) {
+                document.getElementById('carrossel-content').innerHTML = d.capitães.map(c => `
+                    <div class="swiper-slide">
+                        <div class="slide-title">${c.nome}</div>
+                        <div style="font-size:0.7rem; color:#666; text-align:center; margin-bottom:15px">CAP: ${c.capPessoa || '---'}</div>
+                        <div>${c.time.map(p => `<div class="player-row"><span>${p.nome}</span><span style="color:var(--orange)">${p.posicao}</span></div>`).join('')}</div>
+                    </div>
+                `).join('');
+                swiper.update();
+            }
         }
     </script>
 </body>
