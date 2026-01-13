@@ -1,0 +1,22 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      # URL de conexão apontando para o serviço 'db' do docker
+      - MONGO_URL=mongodb://db:27017/copa_quadra_7
+
+  db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      # O volume garante que os dados fiquem salvos na sua pasta local
+      - ./mongodb_data:/data/db
+
+networks:
+  default:
+    name: copa_network

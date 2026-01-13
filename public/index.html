@@ -1,70 +1,142 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DRAFT | QUADRA 7</title>
-    
+    <title>DRAFT | COPA QUADRA 7</title>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap');
-        :root { --orange: #ff4d00; --gold: linear-gradient(45deg, #f3d053, #e1ad01); }
 
-        body { 
-            background: #000; color: white; font-family: 'Oswald', sans-serif; 
-            margin: 0; text-transform: uppercase; overflow-x: hidden; 
+        :root {
+            --orange: #ff4d00;
+            --gold: linear-gradient(45deg, #f3d053, #e1ad01);
+            --gray: #222;
         }
 
-        /* Telas de Bloqueio */
-        .overlay-screen { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 9999; display: flex;
-            flex-direction: column; align-items: center; justify-content: center;
-            padding: 20px; box-sizing: border-box; text-align: center;
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Oswald', sans-serif;
+            margin: 0;
+            text-transform: uppercase;
+            overflow-x: hidden;
         }
 
-        select, .btn { 
-            width: 100%; max-width: 300px; padding: 15px; margin: 10px; 
-            background: #111; color: white; border: 1px solid var(--orange); 
-            font-family: 'Oswald'; font-size: 1rem;
+        /* Telas de Overlay (Login e Espera) */
+        .overlay-screen {
+            z-index: 10001;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
         }
 
-        .btn { background: var(--orange); border: none; cursor: pointer; font-weight: bold; }
+        .login-card {
+            background: #111;
+            padding: 30px;
+            border-top: 5px solid var(--orange);
+            width: 100%;
+            max-width: 320px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255, 77, 0, 0.2);
+        }
+
+        input, .btn {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            font-family: 'Oswald';
+            font-size: 1rem;
+            box-sizing: border-box;
+            border-radius: 5px;
+        }
+
+        .btn {
+            background: var(--orange);
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
         .hidden { display: none !important; }
 
-        /* Interface Principal */
-        .header { 
-            background: #000; padding: 15px; border-bottom: 2px solid var(--orange); 
-            position: fixed; top: 0; width: 100%; z-index: 100; 
-            display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;
+        /* Header e Status */
+        .header {
+            background: #000;
+            padding: 15px;
+            border-bottom: 2px solid var(--orange);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
         }
 
-        .vitrine-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
-            gap: 15px; padding: 20px; margin-top: 80px; padding-bottom: 100px;
+        /* Vitrine de Jogadores */
+        .vitrine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            margin-top: 80px;
+            padding-bottom: 100px;
+            justify-items: center;
         }
 
-        .fifa-card { 
-            width: 140px; height: 200px; background: var(--gold); 
-            clip-path: polygon(0% 15%, 15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%); 
-            position: relative; color: #111; display: flex; flex-direction: column; align-items: center; padding-top: 15px; 
+        .fifa-card {
+            width: 140px;
+            height: 200px;
+            background: var(--gold);
+            clip-path: polygon(0% 15%, 15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%);
+            position: relative;
+            color: #111;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15px;
+            transition: transform 0.2s, opacity 0.3s;
         }
 
-        /* Estilos do Carrossel */
+        .fifa-card:active { transform: scale(0.95); }
+
+        /* Carrossel de Times */
         .swiper { width: 100%; padding-top: 100px; padding-bottom: 50px; }
-        .swiper-slide { 
-            background: #111; border: 2px solid var(--orange); border-radius: 15px; 
-            width: 280px; height: 450px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column;
+        .swiper-slide {
+            background: #111;
+            border: 2px solid var(--orange);
+            border-radius: 15px;
+            width: 280px;
+            height: 450px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
         }
-        .slide-title { color: var(--orange); font-size: 1.5rem; text-align: center; border-bottom: 1px solid #333; margin-bottom: 15px; padding-bottom: 10px; }
-        .player-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; font-size: 0.85rem; }
 
-        .bottom-nav { 
-            position: fixed; bottom: 0; width: 100%; background: #000; 
-            display: flex; border-top: 1px solid #333; z-index: 1000; 
-        }
+        .slide-title { color: var(--orange); font-size: 1.5rem; text-align: center; border-bottom: 1px solid #333; margin-bottom: 15px; padding-bottom: 10px; }
+        .player-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; font-size: 0.85rem; color: #ccc; }
+
+        /* Navegação */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; border-top: 1px solid #333; z-index: 1000; }
         .nav-item { flex: 1; padding: 15px; text-align: center; font-size: 0.8rem; color: #555; cursor: pointer; }
         .nav-item.active { color: var(--orange); border-top: 3px solid var(--orange); }
 
@@ -72,38 +144,39 @@
         .section.active { display: block; }
     </style>
 </head>
+
 <body>
 
-    <div id="screen-id" class="overlay-screen">
-        <h2 style="color:var(--orange)">DRAFT QUADRA 7</h2>
-        <select id="t-select" onchange="filtrarMembros(this.value)">
-            <option value="">SELECIONE SEU TIME</option>
-            <option value="1">SENEGALA 🇸🇳</option>
-            <option value="2">ARÁBIA MALDITA 🇸🇦</option>
-            <option value="3">LARANJA MECÂNICA 🇳🇱</option>
-            <option value="4">BAILE DA COLÔMBIA FC 🇨🇴</option>
-            <option value="5">NICARALHOS 🇳🇮</option>
-            <option value="6">HOLADURAS 🇭🇳</option>
-            <option value="7">4º REICH 🇩🇪</option>
-            <option value="8">ESPANHOLA 🇪🇸</option>
-            <option value="9">REPÚBLICA XECA 🇨🇿</option>
-        </select>
-        <select id="p-select"><option value="">QUEM É VOCÊ?</option></select>
-        <button class="btn" onclick="confirmarID()">ENTRAR</button>
+    <div id="screen-login" class="overlay-screen">
+        <div class="login-card">
+            <h2 style="color:var(--orange)">COPA QUADRA 7</h2>
+            <p style="font-size: 0.8rem; color: #888;">ACESSO DO CAPITÃO</p>
+            <input type="number" id="login-user" placeholder="ID DO CAPITÃO">
+            <input type="password" id="login-pass" placeholder="SENHA" value="123">
+            <button class="btn" onclick="fazerLogin()">ENTRAR NA ARENA</button>
+        </div>
     </div>
 
     <div id="screen-wait" class="overlay-screen hidden">
-        <h1 style="color:var(--orange)">CONECTADO!</h1>
-        <p id="nome-exibicao"></p>
-        <p style="border:1px solid #333; padding:20px;">AGUARDANDO O ADMIN <br> INICIAR O DRAFT...</p>
+        <h1 id="nome-time-espera" style="color:var(--orange)">BEM-VINDO!</h1>
+        <p id="nome-cap-espera" style="letter-spacing: 2px;"></p>
+        <div style="border:1px solid #333; padding:20px; margin-top: 20px; border-radius: 10px;">
+            AGUARDANDO O ADMIN <br> LIBERAR O DRAFT...
+        </div>
+        <button onclick="logout()" style="margin-top: 30px; background: none; border: 1px solid #444; color: #666; padding: 10px 20px; font-family: Oswald; cursor: pointer;">SAIR</button>
     </div>
 
     <div class="header">
-        <span id="meu-status" style="font-size: 0.7rem;"></span>
-        <span id="pote-label" style="background:var(--orange); padding:2px 10px; border-radius:3px">POTE: --</span>
+        <span id="meu-status" style="font-size: 0.8rem; font-weight: bold; color: var(--orange);">SINCRONIZANDO...</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span id="pote-label" style="background:var(--orange); padding:2px 10px; border-radius:3px; font-size: 0.8rem;">POTE: --</span>
+            <button onclick="logout()" style="background: #222; border: 1px solid #ff4d00; color: white; font-family: 'Oswald'; font-size: 0.7rem; padding: 5px 10px; cursor: pointer; border-radius: 3px;">SAIR</button>
+        </div>
     </div>
 
-    <div id="view-draft" class="section active"><div id="vitrine" class="vitrine-grid"></div></div>
+    <div id="view-draft" class="section active">
+        <div id="vitrine" class="vitrine-grid"></div>
+    </div>
 
     <div id="view-times" class="section">
         <div class="swiper mySwiper">
@@ -122,8 +195,7 @@
 
     <script>
         const socket = io();
-        let meuId = localStorage.getItem('capId');
-        let meuNome = localStorage.getItem('capNome');
+        let meuIdTime = localStorage.getItem('capIdTime');
         let dadosServidor = null;
 
         const swiper = new Swiper(".mySwiper", {
@@ -132,43 +204,58 @@
             pagination: { el: ".swiper-pagination" },
         });
 
-        socket.on('config_atual', d => { dadosServidor = d; gerenciarTelas(d); render(d); });
-        socket.on('atualizacao_geral', d => { dadosServidor = d; render(d); });
-        socket.on('draft_liberado', d => { 
-            dadosServidor = d; 
-            document.getElementById('screen-wait').classList.add('hidden'); 
-            render(d); 
-        });
+        async function fazerLogin() {
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
 
-        // TROCA PARA O CARROSSEL AUTOMÁTICO
-        socket.on('draft_finalizado', d => {
-            dadosServidor = d;
-            render(d);
-            mudarAba(document.getElementById('nav-times'), 'view-times');
-            alert("DRAFT FINALIZADO! CONFIRA OS TIMES.");
-        });
+            const res = await fetch('/login-capitao', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pass })
+            });
 
-        function filtrarMembros(timeId) {
-            const p = document.getElementById('p-select');
-            p.innerHTML = '<option value="">QUEM É VOCÊ?</option>';
-            if(!timeId || !dadosServidor) return;
-            const time = dadosServidor.capitães.find(c => c.id == timeId);
-            if(time) time.time.forEach(j => p.innerHTML += `<option value="${j.nome}">${j.nome}</option>`);
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem('capIdTime', data.idTime);
+                localStorage.setItem('capNome', data.nomeCapitão);
+                localStorage.setItem('capTime', data.nomeTime);
+                location.reload();
+            } else { alert("ID ou Senha incorretos!"); }
         }
 
-        function confirmarID() {
-            const tid = document.getElementById('t-select').value, nom = document.getElementById('p-select').value;
-            if(!tid || !nom) return alert("Selecione os campos!");
-            localStorage.setItem('capId', tid); localStorage.setItem('capNome', nom);
-            socket.emit('set_identidade', { timeId: tid, nomePessoa: nom });
-            location.reload();
+        function logout() {
+            if (confirm("DESEJA SAIR?")) { localStorage.clear(); location.reload(); }
+        }
+
+        // --- ATUALIZAÇÕES DO SOCKET ---
+        socket.on('config_atual', d => sincronizar(d));
+        socket.on('atualizacao_geral', d => sincronizar(d));
+        socket.on('draft_liberado', d => sincronizar(d));
+        socket.on('draft_finalizado', d => {
+            sincronizar(d);
+            mudarAba(document.getElementById('nav-times'), 'view-times');
+        });
+
+        function sincronizar(d) {
+            dadosServidor = d;
+            gerenciarTelas(d);
+            render(d);
         }
 
         function gerenciarTelas(d) {
-            if(!meuId) return document.getElementById('screen-id').classList.remove('hidden');
-            document.getElementById('screen-id').classList.add('hidden');
-            document.getElementById('meu-status').innerText = `CAP: ${meuNome}`;
-            if(!d.draftIniciado) document.getElementById('screen-wait').classList.remove('hidden');
+            if (!meuIdTime) {
+                document.getElementById('screen-login').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('screen-login').classList.add('hidden');
+
+            if (!d.draftIniciado) {
+                document.getElementById('screen-wait').classList.remove('hidden');
+                document.getElementById('nome-time-espera').innerText = `OLÁ, ${localStorage.getItem('capNome')}!`;
+                document.getElementById('nome-cap-espera').innerText = localStorage.getItem('capTime');
+            } else {
+                document.getElementById('screen-wait').classList.add('hidden');
+            }
         }
 
         function mudarAba(el, id) {
@@ -176,40 +263,62 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             el.classList.add('active');
-            if(id === 'view-times') setTimeout(() => swiper.update(), 200);
+            if (id === 'view-times') setTimeout(() => swiper.update(), 100);
         }
 
         function render(d) {
-            const potes = ["", "GOLEIROS", "LINHA (R1)", "LINHA (R2)"];
-            document.getElementById('pote-label').innerText = potes[d.poteAtual] || "FIM";
+            const nomesPotes = ["", "GOLEIROS", "LINHA (POTE 2)", "LINHA (POTE 3)"];
+            document.getElementById('pote-label').innerText = `POTE: ${nomesPotes[d.poteAtual] || 'FIM'}`;
 
-            const capVez = d.capitães.find(c => c.id === d.capitãoVez);
+            const eMinhaVez = Number(d.capitãoVez) === Number(meuIdTime);
             const statusLabel = document.getElementById('meu-status');
-            const eMinhaVez = d.capitãoVez == meuId;
 
-            if(eMinhaVez) statusLabel.innerHTML = `<span style="color:#0f0">SUA VEZ!</span>`;
-            else statusLabel.innerText = capVez ? `VEZ: ${capVez.nome}` : meuNome;
+            if (eMinhaVez) {
+                statusLabel.innerHTML = `<span style="color:#0f0; text-shadow: 0 0 10px #0f0;">SUA VEZ!</span>`;
+            } else {
+                const capVez = d.capitães.find(c => Number(c.idTime) === Number(d.capitãoVez));
+                statusLabel.innerText = capVez ? `VEZ: ${capVez.nomeTime}` : "AGUARDANDO...";
+                statusLabel.style.color = "var(--orange)";
+            }
 
+            // Renderiza Vitrine
             if (d.jogadoresDisponiveis) {
                 document.getElementById('vitrine').innerHTML = d.jogadoresDisponiveis.map(j => `
-                    <div class="fifa-card" style="${!eMinhaVez ? 'filter:grayscale(1);opacity:0.5' : ''}" 
-                         onclick="socket.emit('escolher_jogador', {jogadorId: ${j.id}, capId: ${meuId}})">
-                        <div style="font-weight:bold; position:absolute; left:15px; top:20px; font-size:1.2rem">${j.skill}</div>
+                    <div class="fifa-card" 
+                         style="${!eMinhaVez ? 'filter:grayscale(1); opacity:0.3; pointer-events:none;' : ''}"
+                         onclick="escolher(${j.idOriginal})">
+                        <div style="font-weight:bold; position:absolute; left:12px; top:18px; font-size:1.2rem">${j.skill}</div>
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${j.nome}" style="width:70px; margin-top:25px">
-                        <div style="font-size:0.75rem; font-weight:bold; margin-top:10px">${j.nome}</div>
+                        <div style="font-size:0.7rem; font-weight:bold; margin-top:10px; text-align:center; padding: 0 5px">${j.nome}</div>
+                        <div style="font-size:0.55rem; color:#555; margin-top:2px">${j.posicao}</div>
                     </div>
                 `).join('');
             }
 
+            // Renderiza Times
             if (d.capitães) {
                 document.getElementById('carrossel-content').innerHTML = d.capitães.map(c => `
                     <div class="swiper-slide">
-                        <div class="slide-title">${c.nome}</div>
-                        <div style="font-size:0.7rem; color:#666; text-align:center; margin-bottom:15px">CAP: ${c.capPessoa || '---'}</div>
-                        <div>${c.time.map(p => `<div class="player-row"><span>${p.nome}</span><span style="color:var(--orange)">${p.posicao}</span></div>`).join('')}</div>
+                        <div class="slide-title">${c.nomeTime}</div>
+                        <div style="font-size:0.7rem; color:#666; text-align:center; margin-bottom:10px">CAP: ${c.capPessoa}</div>
+                        <div style="overflow-y:auto; flex:1">
+                            ${c.time.map(p => `
+                                <div class="player-row">
+                                    <span>${p.nome}</span>
+                                    <span style="color:var(--orange)">${p.skill}</span>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 `).join('');
                 swiper.update();
+            }
+        }
+
+        function escolher(id) {
+            if (Number(dadosServidor.capitãoVez) !== Number(meuIdTime)) return;
+            if (confirm("CONFIRMAR ESCOLHA?")) {
+                socket.emit('escolher_jogador', { jogadorId: id, capIdTime: meuIdTime });
             }
         }
     </script>
